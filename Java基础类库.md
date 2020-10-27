@@ -126,14 +126,211 @@ public class userInteraction {
 
 ## 5.Java9改进的String、StringBuffer 和StringBuilder类
 
-1. String类时不可变类，即一旦一个String对象被创建以后，包含在这个对象中的字符序列时不可改变的，直至这个对象被销毁。
+1. String类是不可变类，即一旦一个String对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。
 
 2. StringBuffer对象则代表一个字符序列可变的字符串，当一个StringBuffer被创建以后，通过StringBuffer提供的append(),insert(),reverse(),setCharAt(),setLength()等方法可以改变这个字符串对象的字符序列。一旦通过StringBuffer生成了最终想要的字符串，就可以调用它的toString()方法将其转换为一个String对象。
 
 3. StringBuilder和StringBuffer基本相似，两个类的构造器和方法也基本相同。不同的是，StringBuffer是线程安全的，而StringBuilder则没有实现线程安全的功能，所以性能略高。因此在通常的情况下，如果要创建一个内容可变的字符串对象，则应该有限考虑十一哦你给StringBuilder类。
 
-4. String，StringBulider，StringBuffer都实现了CharSequence接口，因此CharSequence可认为是一个字符串的协议接口。
+4. **String，StringBulider，StringBuffer都实现了CharSequence接口**，因此CharSequence可认为是一个字符串的协议接口。
 
    **有关String的**
 
-   String():创建一个包含0个字符穿序列的String对象（并不是返回Null）
+   * String():创建一个包含0个字符串序列的String对象（并不是返回Null）
+
+   * String(byte[] bytes,Charset charset):使用指定的字符集将指定的byte[]数组解码成一个新的String对象。
+
+   * String(byte[] bytes,int offset,int length):使用平台的默认字符集将指定byte[]数组从offset开始，长度length的子数组解码成一个新的String对象
+
+   * String(byte[] bytes,String charsetName):使用指定字符集将指定的byte[]数组解码成一个新的String对象
+
+   * String(char[] value,int offset,int count):将指定的字符数组从offset开始，长度为count的字符元素连缀成字符串
+
+   * **String(String original)**:根据字符串直接量床架一个String对象，也就是说，新创建的String对象是该参数字符串的副本
+
+   * **String(StringBuffer buffer)**:根据StringBuffer对象来创建对应的String对象
+
+   * **String(StringBuilderr builder):**根据StringBuilder对象来创建对应的String对象
+
+     **操作字符串**
+
+   * **char charAt(int index)**:获取字符串中指定位置的字符。其中，参数index指的是字符串序数，字符串的字符序数从0开始到length()-1
+
+     ```Java
+     var s="fkit.org";
+     System.out.println(s.charAt(5));
+     ```
+
+   * **int compareTo(String anoatherString)**:比较两个字符串的大小。如果两个字符串的字符序列相等则返回0；不相等时，从两个字符串第0个字符串开始比较，**返回第一个不相等的字符差**，**另一种情况，较长字符串的前面部分恰巧时较短的字符串，则返回他们的长度差**
+
+   * String concat(String str):将该String对象与str连接在一起。与Java提供的字符串连接运算符“+”的功能相同。
+
+   * boolean contentEquals(StringBuffer sb):将该String对象与StringBuffer对象sb进行比较，当它们包含的字符序列相同时返回true。
+
+   * **static String copyValueOf(char[] data)**:将字符数组连缀成字符串，与String(char[] content)构造器的功能相同。
+
+   * **static StringcopyValue(char[] data,int offset,int count)**:将char数组的子数组中的元素连缀成字符串，与String(char[] value,int offset,int count)构造器的功能相同
+
+   * boolean **endsWith(String suffix)**:返回该String对象是否以suffix结尾
+
+   * boolean equals(Object anObject):将该字符数组与指定对象比较，如果二者包含的字符序列相等，则返回true；否则false
+
+   * **boolean equalsIgnoreCase(String str)**:与前一个方法基本相似，只是忽略字符的大小写。
+
+   * byte[] getBytes():将该String对象转换成byte数组
+
+   * void getChars(int srcBegin,int srcEnd,char[] dst,int dsBegin):该方法将字符串从srcBegin开始，到srcEnd结束的字符复制到dst字符数组中，其中dstBegin为目标字符数组的起始位置
+
+   * **int indexOf(int ch):**找出ch字符在该字符串中**第一次出现的位置**
+
+   * **int indexOf(int ch,int fromIndex):**找出ch字符在该字符串中从fromIndex开始后第一次出现的位置
+
+   * int indexOf(String str):找出str子字符串在该字符串中第一次出现的位置
+
+   * int indexOf(String str,int fromIndex):找出str子字符串在该字符串中从fromIndex开始后第一次出现的位置
+
+   * int indexOf(String str,int fromIndex):找出str字符串在该字符串中从fromIndex开始后第一次出现的位置
+
+   * **int lasIndexOf(int ch):**找出ch字符在该字符串中**最后一次出现的位置**
+
+   * **int lastIndexOf(int ch,in fromIndex):**找出ch字符在该字符串中从fromIndex开始后最后一次出现的位置
+
+   * Int lastIndexOf(String str):找出str字符串在该字符出啊中最后一次出现的位置。
+
+   * int lastIndexOf(String str,int fromIndex):找出str子字符串在该字符串中从fromIndex开始后最后一次出现的位置
+
+   * int length():返回当前字符串长度
+
+   * **String replace(char oldChar,char newChar)**:将字符串中的第一个oldChar替换成newChar。
+
+   * **boolean startsWith(String prefix)**:该String对象是否以prefix开始
+
+   * **boolean startsWith(String prefix,int toffset**):该对象从toffset位置算起，是否以prefix开始。
+
+   * String substring(int beginIndex):获取从beginIndex位置开始到结束的字符串
+
+   * String substring(int beginIndex,int endIndex):获取从beginIndex位置开始到endIndex位置的子字符串
+
+   * char[] toCharArray():将该String对象转换成char数组
+
+   * **String toLowerCase():**将字符串转换成小写
+
+   * **String ToUpperCase()**：将字符串转换成大写
+
+   * **static String valueOf(X x)**:一系列用于将解百纳类型值转换为String对象的方法。
+
+## 6.Math类
+
+1. Java提供了基本的+,-,*,/等基本算数的运算符，但对于更复杂的数学运算，例如，三角函数，对数运算，指数运算无能为力
+2. Math类是一个工具类，它的构造器被定义为private的，因此无法创建Math类的对象；Math中所有方法都是类方法，可以直接通过类名来调用。Math类除了体哦ing大量的静态类之外还提供了两个类变量：PI和E即Π和e
+
+## 7.ThreaLocalRandom与Random
+
+1. Random类专门用于生成一个伪随机数，它有两个构造器；一个构造器使用默认的种子（以当前的时间作为种子），另一个构造器需要程序员显式传入一个long型整数的种子。
+
+2. ThreadLocalRandom类是Java7新增的一个类，它是Random的增强版。在并发访问的环境下，使用ThreadLocalRandom来代替Random可以减少多线程资源的竞争，最终保证系统具有更好的线程安全性。
+
+3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来和洛区ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
+
+4. ThreadLocalRandom与Random都比Math的Random方法提供了更多的方式来生成各种伪随机数，可以生成浮点类型的伪随机数，也可以生成整数类型的伪随机数，还可以指定生成随机数的范围。
+
+   ```Java
+   var rand=new Random();
+   System.out.println(""+rand.nextBoolean()+","+rand.nextDouble()+","+rand.nextFloat()+",");
+   var buffer=new byte[16];
+   rand.nextBytes(buffer);
+   System.out.println(Arrays.toString(buffer));
+   ```
+
+5. Random使用一个48位的种子，如果这两个类的两个实例是用同一个种子创建的，对它们以同样的顺序调用方法，则它们会产生相同的数字序列。
+
+   ```Java
+   var r1=new Random(50);
+       System.out.println(""+r1.nextInt()+","+r1.nextFloat()+","+r1.nextGaussian());
+   
+       var r3=new Random(50);
+       System.out.println(""+r3.nextInt()+","+r3.nextFloat()+","+r3.nextGaussian());
+   	//高斯是产生均值为0，标准差为1的伪随机数
+       var r2=new Random(50);
+       System.out.println(""+r2.nextFloat()+","+r2.nextInt()+","+r2.nextGaussian());
+   -1160871061,0.597892,1.4344888752894227
+   -1160871061,0.597892,1.4344888752894227
+   0.7297136,-1727040520,1.4344888752894227
+   ```
+
+只要两个Random对象的种子相同，而且方法的调用顺序也相同，它们就会产生相同的数字序列。从而证明了Random产生的数字并不是真正的随机而是一种种伪随机。
+
+为了避免两个Random对象产生相同的数字序列，通常推荐使用当前的时间作为Random对象的种子
+
+```Java
+Random rand=new Random(System.currentTimeMillis());
+```
+
+6. 多线程环境下使用ThreadLocalRandom的方式与使用Random基本类似
+
+   ```Java
+   ThreadLocalRandom rand=ThreadLocalRandom.current();
+   int val=rand.nextInt(4,20);
+   double val1=rand.nextDouble();
+   ```
+
+7. BigDecimal类
+
+   1. float,double两种基本浮点类型时已经指出，这两个基本类型的浮点数容易引起精度的丢失。为了能够精确表示，计算浮点数，Java提供了BigDecimal类，该类提供了大量的构造器用于创建BigDecimal对象，包括把所有的基本数值型变量转换成BigDecimal对象，也包括利用数字字符串、数字字符数组来创建BigDecimal对象
+
+   2. 查看BigDecimal类的Bigdecimal(double val)构造器的详细说明时，可以看到不推荐使用该构造器。主要时因为使用该构造器时有一定的不可预知性，当程序使用new BigDecimal(0.1)来创建一个BigDecimal对象时，它的值并不是0.1，它实际上等于一个近似0.1的数。这是因为0.1无法准确的表示为double浮点数，所以传入BigDeciaml构造器的值不会正好等于0.1
+
+      如果使用BigDecimal(String val)构造器的结果时可预知的---写入new BigDecimal("0.1")将创建一个BigDecimal，**它正好等于预期的0.1**，因此通常建议优先使用基于String的构造器。
+
+      如果必须使用double浮点数作为BigDecimal构造器的参数时，不要直接将该double浮点数作为构造器参数创建BigDecimal对象，而是应该通过BigDecimal.valueOf(double value)静态方法来创建BigDecimal对象。
+
+   3. BigDecimal类提供了add(),subtract(),multiply(),divide(),pow()等方法对精确浮点数进行常规算数运算
+
+      ```Java
+      var f1=new BigDecimal("0.05");
+      var f2=BigDecimal.valueOf(0.01);
+      var f3=new BigDecimal(0.05);
+      
+      System.out.println("使用String作为BigDecimal");
+      System.out.println(f1.add(f2));
+      System.out.println(f1.subtract(f2));
+      System.out.println(f1.multiply(f2));
+      System.out.println(f1.divide(f2));
+      
+      System.out.println("使用double作为BigDecimal");
+      System.out.println(f3.add(f2));
+      System.out.println(f3.subtract(f2));
+      System.out.println(f3.multiply(f2));
+      System.out.println(f3.divide(f2));
+      
+      输出
+          使用String作为BigDecimal
+      0.06
+      0.04
+      0.0005
+      5
+      使用double作为BigDecimal
+      0.06000000000000000277555756156289135105907917022705078125
+      0.04000000000000000277555756156289135105907917022705078125
+      0.0005000000000000000277555756156289135105907917022705078125
+      5.000000000000000277555756156289135105907917022705078125
+      ```
+
+   4. 如果程序中要求对double浮点数进行加，减，乘，除基本运算，则需要先将double类型数值包装成BigDecimal对象，调用BigDecimal对象的方法执行运算后再将结果转换成double型变量。这是比较繁琐的过程，可以考虑以BigDecimal为基础定义一个Arith工具类
+
+      ```Java
+      public class Arith {
+        private static final int DEF_DIV_SCALE=10;
+        public static double add(double v1,double v2){
+          var b1= BigDecimal.valueOf(v1);
+          var b2=BigDecimal.valueOf(v2);
+          return b1.add(b2).doubleValue();
+        }
+        //除法与其他的运算不同，其他运算类似 add()
+        public static double div(double v1,double v2){
+          var b1=BigDecimal.valueOf(v1);
+          var b2=BigDecimal.valueOf(v2);
+          return b1.divide(b2,DEF_DIV_SCALE, RoundingMode.HALF_UP).doubleValue();
+        }//提供相对精确的除法运算，当发生除不尽的情况时精确到小数点以后10位数字四舍五入。
+        }
+      ```
