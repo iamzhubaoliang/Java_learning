@@ -6,7 +6,7 @@
 
 2. 与System相似的是，Runtime类也提供了gc()方法和runFinalization方法来通知系统进行垃圾回收，清理系统资源，并提供了load(String filename)和loadLibrary(String libname)方法来加载文件和动态链接库。
 
-3. Runtime类代表Java程序的运行环境，可以访问JVM的相关信息，如处理器数量、内存信息等
+3. **Runtime类代表Java程序的运行环境**，可以访问JVM的相关信息，如处理器数量、内存信息等
 
    ```Java
    public class userInteraction {
@@ -50,17 +50,17 @@
 
 5. String toString():返回该对象的字符串表示。
 
-6. 除此之外Object类还提供了wait(),notify(),notifyAll()几个方法，通过这几个方法可以控制线程的暂停和运行。
+6. 除此之外Object类还提供了**wait(),notify(),notifyAll()**几个方法，**通过这几个方法可以控制线程的暂停和运行**。
 
 7. Java还提供了一个protected的修饰的clone方法，该方法用于帮助其他对象来实现“自我克隆”，所谓“自我克隆”就是得到一个当前对象的副本，而且二者之间完全隔离。由于Object类提供的clone()方法使用了protected修饰，因此该方法只能被子类重写或调用。
 
    自定义类实现"克隆"的步骤如下
 
-   1. 自定义实现Cloneable接口。这是一个标记性的接口，实现该接口的对象可以实现“自我克隆”,接口里没有定义任何的方法
+   1. **自定义实现Cloneable接口。这是一个标记性的接口**，实现该接口的对象可以实现“自我克隆”,接口里没有定义任何的方法
    
    2. 自定义类实现自己clone方法
    
-   3. 实现clone()方法时通过super.clone()：**调用Object实现的clone()**方法来得到该对象的副本，并返回该副本。
+   3. **实现clone()方法时通过super.clone()**：**调用Object实现的clone()**方法来得到该对象的副本，并返回该副本。
    
       ```Java
       class Address{
@@ -99,7 +99,7 @@ Object类提供的clone()方法不仅能简单地处理“复制”对象的问�
 
 ## 4.操作对象的Object工具类 
 
-1. Java7新增了一个Object工具类，它提供了一些工具方法来操作对象，这些工具方法大多是“空指针”安全的。比如你不确定引用变量是否为Null，如果贸然用该变量的toString()方法，则可能引发NullPointerException异常；如果使用Objects类提供的toString(Object o )方法，就不会引发空指针异常，当o为Null时，程序将返回 一个"null"字符串
+1. Java7新增了一个Object工具类，它提供了一些工具方法来操作对象，**这些工具方法大多是“空指针”安全的。比如你不确定引用变量是否为Null，如果贸然用该变量的toString()方法，则可能引发NullPointerException异常；如果使用Objects类提供的toString(Object o )方法**，就不会引发空指针异常，当o为Null时，程序将返回 一个"null"字符串
 
 2. ```Java
    public class userInteraction {
@@ -113,7 +113,7 @@ Object类提供的clone()方法不仅能简单地处理“复制”对象的问�
    }
    ```
 
-上面的程序示范了Objects提供的requireNonNull()方法，当传入的参数不为null时，该方法返回参数本身，否则将会引发NullPointerException异常。该方法主要用来对方法形参进行输入校验，例如
+上面的程序示范了Objects提供的**requireNonNull()**方法，当传入的参数不为null时，该方法返回参数本身，否则将会引发NullPointerException异常。该方法主要用来对方法形参进行输入校验，例如
 
 ```Java
 public class userInteraction {
@@ -126,9 +126,9 @@ public class userInteraction {
 
 ## 5.Java9改进的String、StringBuffer 和StringBuilder类
 
-1. String类是不可变类，即一旦一个String对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。
+1. **String类是不可变类**，即一旦一个String对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。
 
-2. StringBuffer对象则代表一个字符序列可变的字符串，当一个StringBuffer被创建以后，通过StringBuffer提供的append(),insert(),reverse(),setCharAt(),setLength()等方法可以改变这个字符串对象的字符序列。一旦通过StringBuffer生成了最终想要的字符串，就可以调用它的toString()方法将其转换为一个String对象。
+2. **StringBuffer对象则代表一个字符序列可变的字符串**，当一个StringBuffer被创建以后，通过StringBuffer提供的**append(),insert(),reverse(),setCharAt(),setLength()**等方法可以改变这个字符串对象的字符序列。一旦通过StringBuffer生成了最终想要的字符串，就可以调用它的toString()方法将其转换为一个String对象。
 
 3. StringBuilder和StringBuffer基本相似，两个类的构造器和方法也基本相同。不同的是，StringBuffer是线程安全的，而StringBuilder则没有实现线程安全的功能，所以性能略高。因此在通常的情况下，如果要创建一个内容可变的字符串对象，则应该有限考虑十一哦你给StringBuilder类。
 
@@ -169,7 +169,7 @@ public class userInteraction {
 
    * **static String copyValueOf(char[] data)**:将字符数组连缀成字符串，与String(char[] content)构造器的功能相同。
 
-   * **static StringcopyValue(char[] data,int offset,int count)**:将char数组的子数组中的元素连缀成字符串，与String(char[] value,int offset,int count)构造器的功能相同
+   * **static String copyValue(char[] data,int offset,int count)**:将char数组的子数组中的元素连缀成字符串，与String(char[] value,int offset,int count)构造器的功能相同
 
    * boolean **endsWith(String suffix)**:返回该String对象是否以suffix结尾
 
@@ -228,9 +228,9 @@ public class userInteraction {
 
 1. Random类专门用于生成一个伪随机数，它有两个构造器；一个构造器使用默认的种子（以当前的时间作为种子），另一个构造器需要程序员显式传入一个long型整数的种子。
 
-2. ThreadLocalRandom类是Java7新增的一个类，它是Random的增强版。在并发访问的环境下，使用ThreadLocalRandom来代替Random可以减少多线程资源的竞争，最终保证系统具有更好的线程安全性。
+2. ThreadLocalRandom类是Java7新增的一个类，它是Random的增强版。**在并发访问的环境下，使用ThreadLocalRandom来代替Random可以减少多线程资源的竞争，最终保证系统具有更好的线程安全性。**
 
-3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来和洛区ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
+3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来和区ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
 
 4. ThreadLocalRandom与Random都比Math的Random方法提供了更多的方式来生成各种伪随机数，可以生成浮点类型的伪随机数，也可以生成整数类型的伪随机数，还可以指定生成随机数的范围。
 
@@ -258,7 +258,7 @@ public class userInteraction {
    0.7297136,-1727040520,1.4344888752894227
    ```
 
-只要两个Random对象的种子相同，而且方法的调用顺序也相同，它们就会产生相同的数字序列。从而证明了Random产生的数字并不是真正的随机而是一种种伪随机。
+**只要两个Random对象的种子相同，而且方法的调用顺序也相同**，它们就会产生相同的数字序列。从而证明了Random产生的数字并不是真正的随机而是一种种伪随机。
 
 为了避免两个Random对象产生相同的数字序列，通常推荐使用当前的时间作为Random对象的种子
 
@@ -276,9 +276,9 @@ Random rand=new Random(System.currentTimeMillis());
 
 7. BigDecimal类
 
-   1. float,double两种基本浮点类型时已经指出，这两个基本类型的浮点数容易引起精度的丢失。为了能够精确表示，计算浮点数，Java提供了BigDecimal类，该类提供了大量的构造器用于创建BigDecimal对象，包括把所有的基本数值型变量转换成BigDecimal对象，也包括利用数字字符串、数字字符数组来创建BigDecimal对象
+   1. **float,double两种基本浮点类型时已经指出，这两个基本类型的浮点数容易引起精度的丢失**。为了能够精确表示，计算浮点数，Java提供了BigDecimal类，该类提供了大量的构造器用于创建BigDecimal对象，包括把所有的基本数值型变量转换成BigDecimal对象，也包括利用数字字符串、数字字符数组来创建BigDecimal对象
 
-   2. 查看BigDecimal类的Bigdecimal(double val)构造器的详细说明时，可以看到不推荐使用该构造器。主要时因为使用该构造器时有一定的不可预知性，当程序使用new BigDecimal(0.1)来创建一个BigDecimal对象时，它的值并不是0.1，它实际上等于一个近似0.1的数。这是因为0.1无法准确的表示为double浮点数，所以传入BigDeciaml构造器的值不会正好等于0.1
+   2. 查看BigDecimal类的Bigdecimal(double val)构造器的详细说明时，可以看到不推荐使用该构造器。主要时因为使用该构造器时有一定的不可预知性，**当程序使用new BigDecimal(0.1)来创建一个BigDecimal对象时，它的值并不是0.1，它实际上等于一个近似0.1的数**。**这是因为0.1无法准确的表示为double浮点数，所以传入BigDeciaml构造器的值不会正好等于0.1**
 
       如果使用BigDecimal(String val)构造器的结果时可预知的---写入new BigDecimal("0.1")将创建一个BigDecimal，**它正好等于预期的0.1**，因此通常建议优先使用基于String的构造器。
 
@@ -333,4 +333,79 @@ Random rand=new Random(System.currentTimeMillis());
           return b1.divide(b2,DEF_DIV_SCALE, RoundingMode.HALF_UP).doubleValue();
         }//提供相对精确的除法运算，当发生除不尽的情况时精确到小数点以后10位数字四舍五入。
         }
+      ```
+
+## 8.Java8的日期时间类
+
+1. Java提供了Date类来处理日期，时间，Date类从JDK1.0起就开始存在了，但正因为它历史悠久，所以它的大部分构造器，方法都已经过时了，不再推荐使用：但剩下了2个构造器和对象的几个方法
+
+   1. Date():生成一个代表当前日期的Date对象，该构造器在底层调用System.currentTimeMillis()获得Long型整数作为日期参数。
+
+   2. Date(long date):根据指定的Long型整数来生成一个Date对象。该构造器的参数表示创建的Date对象和GMT1970年1月1日00：00：00之间的时间差，以毫秒作为单位
+
+      **Date对象的方法：**
+
+   1. boolean after(Date when):测试该日期是否在指定日期when之后
+
+   2. boolean before(Date wehen):测试该日期是否在指定日期when之前
+
+   3. long getTime()返回该时间对应的long型整数，即从GMT1970-01-01 00：00：00到该Date对象之间的时间差，以毫秒作为计时单位。
+
+      ```Java
+      var d1=new Date();
+      //获取当前时间之后的100ms时间
+      var d2=new Date(System.currentTimeMillis()+100);
+      System.out.println(d2);
+      System.out.println(d1.compareTo(d2));
+      System.out.println(d1.before(d2));
+      ```
+
+2. 总体来说Date是一个设计相当糟糕的类，因此Java官方推荐尽量少用Date构造器和方法，如果需要对时间进行运算或者获取相关的信息推荐使用Calendar工具类
+
+## 9.Calendar
+
+1. Calender类本身是一个抽象类，它是所有日历类的模板，并提供了一些所有日历通用的方法，但它本身并不能直接实例化，程序知道能创建Clendar子类的实例，Java本身提供了一个GregorianCalendar类，一个代表格里高利日历的子类，它代表了通常所说的公历。
+2. 也可以创建自己的Calendar子类，然后将它作为Calendar对象使用（这就是多态）。
+3. Calendar类是一个抽象类，所以不能是哟i给你构造器来进行创建Calendar对象。但它提供了几个静态getInstance()方法来获取Calendar对象，这些方法根据TimeZone,Locale类来和洛区特定的Calendar，如果不指定TimeZone,Locale，则使用默认的TImeZone，Local来创建Calendar。
+
+```Java
+var calendar= Calendar.getInstance();
+var date=calendar.getTime();
+var calendar2=Calendar.getInstance();
+calendar2.setTime(date);
+System.out.println(calendar2.getTime());
+```
+
+4. Calendar 类提供了大量访问，修改日期时间的方法
+
+   1. void add(int field,int amount):根据日历的规则，为给定的日历字段添加或减去指定的时间量
+
+   2. int get(int field):返回指定日历字段值
+
+   3. int getActualMaximum(int field):返回指定日历字段可能拥有的最大值，例如月，最大值为11
+
+   4. int getActualMinimum(int field)：返回只当日历字段可能拥有的最小值。例如月最小值为0
+
+   5. void roll(int field,int amount)：与add方法类似，区别在于加上amount后超过了该字段所能表示的最大范围时，也不会向上一个字段进位
+
+   6. void set(int field,int value):将给定的日历字段设置为给定的值。
+
+   7. void set(int year,int month,int date):设置Calendar对象的年，月，日三个字段值。
+
+   8. void set(int year,int month,int date,int hourOfDay,int minute,int second):设置Calendar对象的年、月，日，时，分，秒6个字段的值
+
+      上面的很多方法都需要一个int 类型的field参数，field时Calendar类的类变量，如Calendar.YEAR、Calendar.MONTH等分别代表了年，月，日，小时，分钟，秒等字段。需要指出是Calendar.MONTH字段代表月份，月份的起始值不是1，而是0，所以要设置8月时，用7而不是8.
+
+      ```Java
+      var c=Calendar.getInstance();
+      //取出年
+        System.out.println(c.get(Calendar.YEAR));
+        System.out.println(c.get(Calendar.MONTH));
+        System.out.println(c.get(Calendar.DATE));
+      
+        c.set(2003,10,23,12,32,23);
+        c.add(Calendar.YEAR,-1);//Calendar的年前推1年
+        System.out.println(c.getTime());
+        c.roll(Calendar.MONTH,-8);
+        System.out.println(c.getTime());
       ```
