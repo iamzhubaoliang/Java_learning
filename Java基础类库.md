@@ -364,7 +364,7 @@ Random rand=new Random(System.currentTimeMillis());
 
 ## 9.Calendar
 
-1. Calender类本身是一个抽象类，它是所有日历类的模板，并提供了一些所有日历通用的方法，但它本身并不能直接实例化，程序知道能创建Clendar子类的实例，Java本身提供了一个GregorianCalendar类，一个代表格里高利日历的子类，它代表了通常所说的公历。
+1. **Calender类本身是一个抽象类**，它是所有日历类的模板，并提供了一些所有日历通用的方法，但它本身并不能直接实例化，程序知道能创建Clendar子类的实例，Java本身提供了一个GregorianCalendar类，一个代表格里高利日历的子类，它代表了通常所说的公历。
 2. 也可以创建自己的Calendar子类，然后将它作为Calendar对象使用（这就是多态）。
 3. Calendar类是一个抽象类，所以不能是哟i给你构造器来进行创建Calendar对象。但它提供了几个静态getInstance()方法来获取Calendar对象，这些方法根据TimeZone,Locale类来和洛区特定的Calendar，如果不指定TimeZone,Locale，则使用默认的TImeZone，Local来创建Calendar。
 
@@ -409,3 +409,226 @@ System.out.println(calendar2.getTime());
         c.roll(Calendar.MONTH,-8);
         System.out.println(c.getTime());
       ```
+
+   9. add与roll的区别
+
+      add会发生进位
+
+      ```Java
+      var call=Calendar.getInstance();
+      call.set(2003,7,23,0,0,0);
+      call.add(MONTH,6);//2003-8-23=>2004-2-23
+      call.set(2003,7,31,0,0,0);
+      cal.add(MONTH,6);//2003-8-23=>2003-2-23
+      ```
+
+      roll不会发生进位
+
+      ```Java
+      var cal3=Calendar.getInstance();
+      cal3.set(2003,7,31,0,0,0);
+      cal3.roll(MOTH,6);//2003-8-23=>2003-2-23
+      ```
+
+   10. 设置Calendar的容错性
+
+       ```Java
+       Calendar cal=Calendar.getInstance();
+       cal.set(Calendar.MONTH,13);//这里设置13会导致进位的发生Year会+1
+       System.out.println(cal.getTime());
+       
+       //关闭容错性会导致程序出现异常
+       cal.setLenient(false);
+       cal.set(Calendar.MONTH,13);
+       System.out.println(cal.getTime());
+       ```
+
+   Calendar 有两种解释日历字段的模式：lenient模式和non-lenient模式。当Calendar处于lenient模式时，每个时间字段可接受超出它的允许的范围值；当Calendar处于non-lenient模式时，如果为某个时间字段设置的值超出了它允许的取值范围，将会抛出异常。
+
+   10. set方法延迟修改
+
+       set(f,value)方法将日历字段f更改为value,此外它还设置了一个内部成员变量，以指示日历字段f已经被修改。尽管日历字段f时立即被更改的，但该Calendar所代表的时间不会立即修改，直到下次调用get(),getTIme(),getTImeInMillis(),add()或roll()时才会重新计算日历的时间。这被称为set()方法的延迟修改，采用延迟修改的优势是多次调用set()不会触发多次不必要的计算（需要计算出一个代表实际时间的Long型整数）
+
+       ```JAVA
+       Calendar cal=Calendar.getInstance();
+       cal.set(2003,7,31);
+       cal.set(Calendar.MONTH,8);
+       System.out.println(cal.getTime());//1
+       cal.set(Calendar.DATE,5);
+       System.out.println(cal.getTime());//2
+       ```
+
+   如果将1处注释掉则2处是9.5而当1处没有注释掉则就是10,5(注意一件事就是月份是从0开始的)
+
+## 10.新的日期时间包
+
+Java8专门新增了一个java.time包，该包下包含了如下常用的类
+
+1. Clock：该类用于获取指定时区的当前日期，时间。该类可取代System类的currentTimeMillis()方法，而且提供了更多的方法来获取当前的时间，日期。该类提供了大量的静态方法来获取Clock对象。
+
+   ```Java
+   //获取当前的Clock
+   Clock clock=Clock.systemUTC();
+   //通过Clock获取当前的时间
+   System.out.println("当前时刻为："+clock.instant());//当前时刻为：2020-10-29T01:24:15.431919700Z
+   ```
+
+2. Duration：该类代表持续时间。该类可以非常方便的获取一段时间。
+
+   ```Java
+   
+         //获取当前的Clock
+         Clock clock=Clock.systemUTC();
+   //通过Clock获取当前的时间
+         System.out.println("当前时刻为："+clock.instant());
+         var d=Duration.ofSeconds(6000);
+         System.out.println("6000秒相当于"+d.toMinutes()+"分");
+         System.out.println("6000秒相当于"+d.toHours()+"小时");
+         System.out.println("6000秒相当于"+d.toDays()+"天");
+         var clock2=Clock.offset(clock,d);
+         System.out.println("当前时刻加6000秒"+clock2.instant());
+   ```
+
+3. Instant:代表一个具体的时刻，可以精确到纳秒。该类提供了静态的now()方法来获取当前的时刻，也提供了静态的now(Clock clock)方法来获取clock对应的时间，除此之外还提供了一系列minusXxx()方法在当前的时刻基础上减去一段时间，也提供了plusXxx()方法在当前时刻基础上加上一段时间。
+
+   ```Java
+   var instant=Instant.now();
+   //获取当前的时间
+   System.out.println(instant);
+   //instanta添加6000秒返回新的Instant
+   var instant2=instant.plusSeconds(6000);
+   System.out.println(instant2);
+   //根据字符串解析Instant对象
+   var instant3=Instant.parse("2014-02-23T10:12:35.3412z");
+   System.out.println(instant3);
+   //在instant3的基础上增加5小时4分钟
+   var instance4=instant3.plus(Duration.ofHours(5).plusMinutes(4));
+   System.out.println(instance4);
+   //instant4的5天以前的时刻
+   var instant5=instance4.minus(Duration.ofDays(5));
+   System.out.println(instant5);
+   ```
+
+4. LocalDate:该类代表不带时区的日期，例如2007-12-03。该类提供了静态的now方法来获取当前的日期，也提供了静态的now(Clock clock)方法来获取clock对应的日期。除此之外，它还提供了minusXxx()方法在当前年份基础上减去几年，几月，几周，或者几日，也提供了plusXxx()方法在当前的年份基础上加上几年，几月，几周，或者几日。
+
+   ```Java
+   var localDate=LocalDate.now();
+   System.out.println(localDate);
+   //获得2014年的第146天
+   localDate=LocalDate.ofYearDay(2014,146);
+   System.out.println(localDate);
+   //设置时间为2014、5、21
+   localDate=LocalDate.of(2014,Month.MAY,21);
+   System.out.println(localDate);
+   ```
+
+5. localDateTime:该类不带时区的日期，时间同上
+
+   ```Java
+   var localdatetime=LocalDateTime.now();
+   var futer=localdatetime.plusHours(25).plusMinutes(3);
+   System.out.println("当前日期，时间25h3min之后"+futer);
+   ```
+
+6. MothDay:该类仅代表几月几日，例如04-12.该类提供了静态的now()方法来获取当前的日期，也提供了静态的now(Clock clock)方法来获取clock对应的月，日。
+
+7. Year：该类仅代表年，例如2014。该类提供了静态的now()方法来获取当前的年份，也提供了静态的now(Clock clock)方法来获取。除此之外，它还提供了minusYears()方法在当前年份基础上减去几年，也提供了plusYears()方法在当前年份基础上加上几年
+
+8. YearMonth:该类仅代表年月，例如2014-04.该类提供了静态的now()......也提供了now(Clock clock).....除此之外........同上
+
+9. ZonedDateTIme:该类代表一个时区化的日期，时间。
+
+10. ZoneId:该类代表一个时区
+
+11. DayOfWeek:这是一个枚举类，定义了周日到周六的枚举值
+
+12. Month：这也是一个简单的枚举类，定义了一月到十二月的枚举值。
+
+    ```Java
+    var year=Year.now();
+    System.out.println("当前的年份"+year);
+    year=year.plusYears(5);
+    System.out.println("当前年份再加5年"+year);
+    //根据指定月份获取YearMonth
+    var ym=year.atMonth(10);
+    System.out.println("year年10月"+ym);
+    //当前年月再加5年，减3个月
+    ym=ym.plusYears(5).minusMonths(3);
+    System.out.println("year年10月再加5年，减3个月"+ym);
+    var md=MonthDay.now();
+    System.out.println("当前月日:"+md);
+    //设置为5月23
+    var md2= md.with(Month.MAY).withDayOfMonth(23);
+    System.out.println("5月23日为"+md2);
+    ```
+
+## 11.正则表达式
+
+1. 正则表达式可以对字符串进行查找，提取，分割，替换等操作
+
+2. boolean matches(String reges,String replacement)：将该字符串中所有匹配regex的字符串替换提成replacement
+
+3. String replaceFirst(String regex,String replacement):将该字符串中第一个匹配regex的子字符串替换成replacement
+
+4. String[] split(String regex):以regex作为分隔符，把该字符串分割成多个子串
+
+5. 除此之外Java还提供了Pattern和Matcher两个类专门用于提供正则表达式支持
+
+6. 正则表达式就是一个用于匹配字符串的模板，可以匹配一批字符串，所以创建正则表达式就是创建一个特殊的字符串
+
+   x:字符x
+
+   \0mnn:八进制0mnn所表示的字符
+
+   \xhh：十六进制0xhh所表示的字符
+
+   \uhhhh:十六进制0xhhh所表示的Unicode字符
+
+   \t:制表符('\u009')
+
+   \n:换行符('\u00A')
+
+   \r:回车符('\u00D')
+
+   \f:换页符('\u00C')
+
+   \a:报警符('\u007')
+
+   \e:Escape符('\u001B')
+
+   \cx:x对应的控制符，
+
+   ==================================
+
+   "\u0041\\\\"匹配A\
+
+   "\u00616\t"匹配a<制表符>
+
+   "\\\?\\\\ ]"匹配?]
+
+   上面两个反斜杠相当于一个
+
+7. 通配符
+
+   * '.'可以匹配任何字符
+
+   * \d 可以匹配0-9所有的数字
+
+   * \D可以匹配非数字
+
+   * \s匹配所有的空白字符，包括空格，制表符，回车，换页符，换行符等
+
+   * \S所有非空白字符
+
+   * \w所有单词字符，包括0-9所有数字，26个英文字母和下划线(_)
+
+   * \W匹配所有非单词字符
+
+     记忆：d的意思是digit代表数字;s是space的意思代表空白;w是word的意思，代表单词。d,s,w的大写形式正好与小写相反
+
+8. 方括号表达式
+
+   * 表示枚举[]：例如[abc]，表示a,b,c其中任意一个字符：[gz],表示g,z其中任意一个字符
+
+   * 表示范围-：例如[a-f],表示a-f 范围内的任意字符；[\\\u004-\\\u0056],表示十六进制字符\\u0041到\\u0056范围内的字符
+   *  表示求否^:例如[^abc]
