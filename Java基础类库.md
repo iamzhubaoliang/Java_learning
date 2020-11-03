@@ -230,9 +230,9 @@ public class userInteraction {
 
 2. ThreadLocalRandom类是Java7新增的一个类，它是Random的增强版。**在并发访问的环境下，使用ThreadLocalRandom来代替Random可以减少多线程资源的竞争，最终保证系统具有更好的线程安全性。**
 
-3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来和区ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
+3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来获取ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
 
-4. ThreadLocalRandom与Random都比Math的Random方法提供了更多的方式来生成各种伪随机数，可以生成浮点类型的伪随机数，也可以生成整数类型的伪随机数，还可以指定生成随机数的范围。
+4. **ThreadLocalRandom与Random都比Math的Random方**法提供了更多的方式来生成各种伪随机数，可以生成浮点类型的伪随机数，也可以生成整数类型的伪随机数，还可以指定生成随机数的范围。
 
    ```Java
    var rand=new Random();
@@ -316,7 +316,7 @@ Random rand=new Random(System.currentTimeMillis());
       5.000000000000000277555756156289135105907917022705078125
       ```
 
-   4. 如果程序中要求对double浮点数进行加，减，乘，除基本运算，则需要先将double类型数值包装成BigDecimal对象，调用BigDecimal对象的方法执行运算后再将结果转换成double型变量。这是比较繁琐的过程，可以考虑以BigDecimal为基础定义一个Arith工具类
+   4. **如果程序中要求对double浮点数进行加，减，乘，除基本运算，则需要先将double类型数值包装成BigDecimal对象，调用BigDecimal对象的方法执行运算后再将结果转换成double型变量。**这是比较繁琐的过程，可以考虑以BigDecimal为基础定义一个Arith工具类
 
       ```Java
       public class Arith {
@@ -447,17 +447,20 @@ System.out.println(calendar2.getTime());
 
    10. set方法延迟修改
 
-       set(f,value)方法将日历字段f更改为value,此外它还设置了一个内部成员变量，以指示日历字段f已经被修改。尽管日历字段f时立即被更改的，但该Calendar所代表的时间不会立即修改，直到下次调用get(),getTIme(),getTImeInMillis(),add()或roll()时才会重新计算日历的时间。这被称为set()方法的延迟修改，采用延迟修改的优势是多次调用set()不会触发多次不必要的计算（需要计算出一个代表实际时间的Long型整数）
+       set(f,value)方法将日历字段f更改为value,此外它还设置了一个内部成员变量，以指示日历字段f已经被修改。尽管日历字段f时立即被更改的，但该Calendar所代表的时间不会立即修改，直到下次调用get(),getTIme(),getTImeInMillis(),add()或roll()时才会重新计算日历的时间。这被称为set()方法的延迟修改，**采用延迟修改的优势是多次调用set()不会触发多次不必要的计算（需要计算出一个代表实际时间的Long型整数）**
 
        ```JAVA
        Calendar cal=Calendar.getInstance();
-       cal.set(2003,7,31);
+       cal.set(2003,7,31);//2003.8.31
+       //这会将日期设置为9.31,但31日并不存在
+       //如果立即修改，系统将会把cal自动调整到10.1
        cal.set(Calendar.MONTH,8);
-       System.out.println(cal.getTime());//1
-       cal.set(Calendar.DATE,5);
-       System.out.println(cal.getTime());//2
+       //下面输出10月1日
+       System.out.println(cal.getTime());//1。如果没有注释掉会自动调整到10.1
+    cal.set(Calendar.DATE,5);
+       .System.out.println(cal.getTime());//2
        ```
-
+   
    如果将1处注释掉则2处是9.5而当1处没有注释掉则就是10,5(注意一件事就是月份是从0开始的)
 
 ## 10.新的日期时间包
@@ -564,9 +567,11 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
 
 ## 11.正则表达式
 
+### 1.介绍
+
 1. 正则表达式可以对字符串进行查找，提取，分割，替换等操作
 
-2. boolean matches(String reges,String replacement)：将该字符串中所有匹配regex的字符串替换提成replacement
+   1. boolean matches(String reges,String replacement)：将该字符串中所有匹配regex的字符串替换提成replacement
 
 3. String replaceFirst(String regex,String replacement):将该字符串中第一个匹配regex的子字符串替换成replacement
 
@@ -631,4 +636,138 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
    * 表示枚举[]：例如[abc]，表示a,b,c其中任意一个字符：[gz],表示g,z其中任意一个字符
 
    * 表示范围-：例如[a-f],表示a-f 范围内的任意字符；[\\\u004-\\\u0056],表示十六进制字符\\u0041到\\u0056范围内的字符
-   *  表示求否^:例如[^abc]
+   
+   * 表示求否^:例如\[^abc\]表示非a,b,c的任意字符；\[a-f\]表示不是a-f范围内的任意字符
+   
+   * 表示“与”运算：&&,例如\[a-z&&\[def\]]表示求a-z和\[def\]的交集.表示d,e,f
+   
+     \[a-z&&\[^bc\]],a-z范围内所有字符，除b和c之外，即[ad-z]
+   
+     \[a-z&&\[^m-p\]],a-z范围内的所有字符，除m-p范围之外的字符,即[a-lq-z]
+   
+   * 表示并运算：并运算与前面的枚举类似。例如\[a-d\[m-p\]\]表示[a-dm-p]
+
+8. 正则表达式还支持圆括号表达式，用于将多个表达式组成一个子表达式，圆括号中可以使用或运算符。例如正则表达式((public)|(protected)|(private))用于匹配Java的三个访问控制符其中之一。
+
+9. 正则表达式支持数量表示符有以下集中模式
+   1. Greedy(贪婪模式):数量表示符默认采用贪婪模式，除非另有表示。贪婪模式的表达式会一直匹配下去，知道无法匹配为止-。如果你发现表达式匹配的结果与预期不符，很有可能是因为----你以为表达式只会匹配前面的几个字符，而实际上它是贪婪模式，所以会一直匹配下去。
+
+   2. Reluctant(勉强模式)：用问号?表示，它只会匹配最少的字符，也称为最小匹配模式
+
+   3. Possessive(占有模式):用加号+表示，目前只有Java支持占
+
+   4. 有模式，通常比较少用
+
+      ![image-20201103144231426](./pic/image-20201103144231426.png)
+
+### 2.使用正则表达式
+
+1. 一旦在程序中定义了正则表达式，就可以使用Pattern和Matcher来使用正则表达式
+
+   **Pattern对象是正则表达式变异后在内存中的表达形式**，因此，**正则表达式字符串必须先被编译为Pattern对象**，然后再**利用该Pattern对象创建对应的Matcher对象**。执行匹配所涉及的状态保留在Matcher对象中，**多个Matcher对象可以共享一个Pattern对象**。
+
+   ```Java
+   //将一个字符串编译成Pattern对象
+   Pattern P =Pattern.compile("ab");
+   //使用Pattern对象创建Matcher对象
+   Matcher m=P.matcher("aaaaab");
+   System.out.println(m.matches());//true
+   ```
+
+   上面定义的Pattern对象可以重复多次使用。如果某个正则表达式仅需一次使用，则可直接使用Pattern类的静态matches方法，此方法自动把指定字符串编译成匿名的Pattern对象，并执行匹配
+
+   ```Java
+   boolean b =Pattern.matches("a*b","aaaab");
+   System.out.println(b);
+   ```
+
+   但采用上面这条语句每次都要重新编译
+
+   2. Pattern是不可变类，可供多个并发线程安全使用
+
+   3. Matcher类提供了如下的方法
+
+      * find():返回目标字符串中是否包含与Pattern匹配的子串
+      * group():返回上一次与Pattern匹配的子串
+      * start():返回上一次与Pattern匹配的子串在目标中的开始位置
+      * end():返回上一次与Pattern匹配的子串在目标字符串中的位置加1
+      * lookingAt():返回目标字符串前面的部分与Pattern是否匹配
+      * matches():返回整个目标字符串与Pattern是否匹配
+      * reset()：将现有的Matcher对象应用于一个新的字符序列
+
+   4. CharSequence接口代表一个字符串序列，可以是各种形式的字符串。
+
+   5. 通过Matcher类的find()和group方法可以从目标字符串中依次取出特定的子串（匹配正则表达式的子串），例如互联网爬虫，它们可以自动从网页中识别出所有的电话号码。
+
+      ```Java
+       var str="我想求购一本《疯狂Java讲义》，尽快联系我13500006666"+"交朋友，电话号码是15611125565";
+          Matcher m=Pattern.compile("((13\\d)|(15\\d))\\d{8}").matcher(str);
+          while (m.find()){
+              System.out.println(m.group());
+          }
+      }
+      ```
+
+      find()方法依次查找字符串中与Pattern匹配的子串，一旦找到对应的子串，下次调用find()方法将接着查找。
+
+      通过程序运行结果可以看出，使用正则表达式可以提取网页上的电话号码，也可以提取网址。如果程序再进一步，可以从网页上提取超链接信息，再根据超链接打开其他网页，然后在其他网页上重复这个过程就可以实现简单的网络爬虫了。
+
+   6. find()方法还可以传入一个int类型的参数，带int参数的find()方法将从该Int索引处向下搜索。start()和end()方法主要用于确定子串在目标中的位置。
+
+   7. matches()和lookingAt()方法有点相似，只是matches()方法要求整个字符串和Pattern完全匹配时才返回true,而lookingAt()只要字符串以Pattern开头就会返回true。reset()方法将现有的Matcher对象应用于新的字符串序列
+
+      ```Java
+   public static void main(String[] args){
+         String[] mails={
+           "kongyeeku@163.com",
+           "kongyeeku@gmail.com",
+           "ligang@crazyit.com",
+           "wanwa@abc.xx"
+         };
+         var mailRegEx="\\w{3,20}@\\w+\\.(com|gov|net|cn|org)";
+         var mailpattern=Pattern.compile(mailRegEx);
+         Matcher matcher=null;
+         for (var mail:mails){
+             if(matcher==null){
+                 matcher=mailpattern.matcher(mail);
+             }else{
+                 matcher.reset(mail);
+             }
+             String result=mail+(matcher.matches() ? "shi" :"bushi");
+             System.out.println(result);
+         }
+      }
+      ```
+      
+   8. String类里也提供了matches()方法，该方法返回该字符串是否匹配指定的正则表达式
+   
+      ```Java
+      System.out.println("kongyeeku@fdfd.com".matches("\\w{3,20}@\\w+\\.(com|gov|net|cn|org)"));
+      ```
+   
+   9. 还可以利用正则表达式对目标字符串进行分割，查找，替换等操作
+   
+      ```Java
+      String[] msgs= {
+      		"Java has regular expressions in 1.4",
+      		"regular expressions now expressing in Java",
+      		"Java represses oracular expressions"
+      	};
+      	var p=Pattern.compile("\\bre\\w*");
+      	Matcher matcher=null;
+      	for (var i=0;i<msgs.length;i++) {
+      		if(matcher==null) {
+      			matcher=p.matcher(msgs[i]);
+      		}else {
+      			matcher.reset(msgs[i]);
+      		}
+      		System.out.println(matcher.replaceAll("哈哈"));
+      		
+      	}
+      ```
+   
+      上述程序将以re开头的单词全部替换，Matcher类还提供了一个replaceFirst()，该方法只替换第一个匹配的子串。
+   
+      String类也提供了replaceAll(),replaceFirst(),split()方法。
+   
+
