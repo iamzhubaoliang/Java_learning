@@ -739,6 +739,8 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
       }
       ```
       
+      
+      
    8. String类里也提供了matches()方法，该方法返回该字符串是否匹配指定的正则表达式
    
       ```Java
@@ -769,5 +771,81 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
       上述程序将以re开头的单词全部替换，Matcher类还提供了一个replaceFirst()，该方法只替换第一个匹配的子串。
    
       String类也提供了replaceAll(),replaceFirst(),split()方法。
+   
+
+## 12.变量处理和方法处理
+
+### 1.  Java9增强的MethodHandle
+
+1. MethodHandle为Java增加了方法引用功能，方法引用的概念有点类似于C的“函数指针”。这种方法引用是一种轻量级的引用方式，它不会检查方法的访问权限，也不会管方法所属的类，实例方法或静态方法，MethodHandle就是简单代表特定的方法，并可通过MethodHandle来调用。
+
+2. 为了使用MethodHandle,还涉及如下几个类
+
+   1. MethodHandles:MethodHandle的工厂类，它提供了一系列静态的方法用于获取MethodHandle
+
+   2. MethodHandles.Lookup：Lookup静态内部类也是MethodHandle,VarHandle的工厂类，专门用于获取MethodHandle和VarHandle.
+
+   3. MethodType:代表一个方法类型。MethodType根据方法的形参，返回值类型来确定方法的类型 
+
+      ```Java
+      public class resgs {
+      private static void hello() {
+      	System.out.println("Hello world");
+      }
+      private String hello(String name) {
+      	System.out.println("执行带参数的hello"+name);
+      	return name+",您好";
+      }
+      public static void main(String[] args) throws Throwable{
+      	var type=MethodType.methodType(void.class);
+          //使用MethodHandles.Lookup的findStatic获取方法
+      	var mtd=MethodHandles.lookup().findStatic(resgs.class, "hello", type);
+      	mtd.invoke();
+      	var mtd2=MethodHandles.lookup().findVirtual(resgs.class, 
+                                                      "hello",
+                                                      
+                                                     MethodType.methodType(String.class,String.class));//指定获取返回值为String,形参为String的方法类型 
+          //通过MethodHandle执行方法，传入主调对象和形参
+      	System.out.println(mtd2.invoke(new resgs(),"孙悟空"));
+      	
+      }
+      }
+      ```
+
+      从上面可以看出MethodHandle可以让Java动态的调用某个方法。
+
+   ## 2. Java9增加的VarHandle
+
+   VarHandle只要用于动态操作**数组的元素**或者**对象的成员变量**。VarHandle与MethodHandle非常相似，它也需要通过MethodHandles来获取实例。
+
+   ```Java
+   public class resgs {
+   public static void main(String[] args) throws Throwable{
+   	var sa=new String[] {"Java","Kotlin","Go"};
+   	var avh=MethodHandles.arrayElementVarHandle(String[].class);
+   	//比较设置：如果第三个元素是Go,则该元素被设为Lua
+   	var r=avh.compareAndSet(sa,2,"Go","Lua");
+   	System.out.println(r);
+   	System.out.println(Arrays.toString(sa));
+   	//获取数组的第二个元素
+   	System.out.println(avh.get(sa,1));
+   	
+   	//用findVarHandle方法获取User类中名为name,类型为String的实例变量
+   	var vh1=MethodHandles.lookup().findVarHandle(User.class, "name", String.class);
+   	var user=new User();
+   	System.out.println(vh1.get(user));//输出为null
+   	vh1.set(user,"孙悟空");
+   	System.out.println(user.name);
+   	
+   	
+   	
+   }
+   }
+   class User{
+   	String name;
+   	static int MAX_AGE;
+   }
+   ```
+
    
 
