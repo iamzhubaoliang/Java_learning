@@ -1153,4 +1153,49 @@ Java8新增的日期，时间API里不仅包含了Instant，LocalDate,LocalDateT
 
 获取DateTimeFormatter对象有如下三种方式
 
-直接使用静态常量创建DateTimeFormatter格式器。DateTimeFormatterf类中包含了大量形如ISO_LOCAL_DATE、ISO_LOCAL_TIMEI,ISO_LOCAL_DATE_TIME等静态常量，这些静态常量本身就是DateTimeFormatter实例。
+* 直接使用静态常量创建DateTimeFormatter格式器。DateTimeFormatterf类中包含了大量形如ISO_LOCAL_DATE、ISO_LOCAL_TIMEI,ISO_LOCAL_DATE_TIME等静态常量，这些静态常量本身就是DateTimeFormatter实例。
+* 使用代表不同风格的枚举值来创建DateTimeFormatter格式器。在FormatStyle枚举类中定义了FULL,LONG,MEDIUM,SHORT四个枚举值，他们代表日期，时间格式的不同风格
+
+### 17.1使用DateTimeForMatter完成格式化
+
+使用DateTimeFormatter将日期，时间（LocalDate，LocalDateTime,LocalTime等实例）格式化为字符串，可以通过如下两种方式。
+
+* 调用LocalDate,LocalDateTime,LocalTime等日期，时间对象的format(DateTimeFormatter formatter)方法执行格式化。
+
+* 上面两种方式的功能相同，用法也基本相似。
+
+  ```Java
+  var formatters = new DateTimeFormatter[] {
+          // 直接使用常量创建DateTimeFormatter格式器
+          DateTimeFormatter.ISO_LOCAL_DATE,
+          DateTimeFormatter.ISO_LOCAL_TIME,
+          DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+          // 使用本地化的不同风格来创建DateTimeFormatter格式器
+          DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM),
+          DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG),
+          // 根据模式字符串来创建DateTimeFormatter格式器
+          DateTimeFormatter.ofPattern("Gyyyy%%MMM%%dd HH:mm:ss")
+  };
+  var date = LocalDateTime.now();
+  // 依次使用不同的格式器对LocalDateTime进行格式化
+  for (var i = 0; i < formatters.length; i++)
+  {
+    // 下面两行代码的作用相同
+    System.out.println(date.format(formatters[i]));
+    System.out.println(formatters[i].format(date));
+  }
+  ```
+
+### 17.2使用DateTiemFormatter解析字符串
+
+为了使用DateTimeFormatter将指定格式的字符串解析成日期，时间对象（LocalDate,LocalDateTime,LocalTeime等实例）可通过日期，时间对象提供的parse(CharSequece text,DateTimeFormatter formatter)方法进行解析。
+
+```Java
+var str1="2014==04==12 01时06分09秒";
+var formatter1=DateTimeFormatter.ofPattern("yyyy==MM==dd HH时mm分ss秒");
+var dt1=LocalDateTime.parse(str1,formatter1);
+System.out.println(dt1);
+```
+
+ 
+
