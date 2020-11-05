@@ -664,7 +664,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
 
 1. 一旦在程序中定义了正则表达式，就可以使用Pattern和Matcher来使用正则表达式
 
-   **Pattern对象是正则表达式变异后在内存中的表达形式**，因此，**正则表达式字符串必须先被编译为Pattern对象**，然后再**利用该Pattern对象创建对应的Matcher对象**。执行匹配所涉及的状态保留在Matcher对象中，**多个Matcher对象可以共享一个Pattern对象**。
+   **Pattern对象是正则表达式编译后在内存中的表达形式**，因此，**正则表达式字符串必须先被编译为Pattern对象**，然后再**利用该Pattern对象创建对应的Matcher对象**。执行匹配所涉及的状态保留在Matcher对象中，**多个Matcher对象可以共享一个Pattern对象**。
 
    ```Java
    //将一个字符串编译成Pattern对象
@@ -695,7 +695,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
       * matches():返回整个目标字符串与Pattern是否匹配
       * reset()：将现有的Matcher对象应用于一个新的字符序列
 
-   4. CharSequence接口代表一个字符串序列，可以是各种形式的字符串。
+   4. **CharSequence接口代表一个字符串序列，**可以是各种形式的字符串。
 
    5. 通过Matcher类的find()和group方法可以从目标字符串中依次取出特定的子串（匹配正则表达式的子串），例如互联网爬虫，它们可以自动从网页中识别出所有的电话号码。
 
@@ -708,7 +708,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
       }
       ```
 
-      find()方法依次查找字符串中与Pattern匹配的子串，一旦找到对应的子串，下次调用find()方法将接着查找。
+      **find()方法依次查找字符串中与Pattern匹配的子串，一旦找到对应的子串，下次调用find()方法将接着查找。**
 
       通过程序运行结果可以看出，使用正则表达式可以提取网页上的电话号码，也可以提取网址。如果程序再进一步，可以从网页上提取超链接信息，再根据超链接打开其他网页，然后在其他网页上重复这个过程就可以实现简单的网络爬虫了。
 
@@ -847,5 +847,310 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
    }
    ```
 
+## 13.Java 11改进国际化与格式化
+
+1. Java国际化主要通过如下三个类完成
+
+   * java.util.ResourceBundle:用于加载国家，语言资源包。
+   * java.util.Locale:用于封装特定的国家/区域，语言环境。
+   * java.text.MessageFormat:用于格式化带占位符的字符串
+
+2. 为了实现程序的国际化，必须先提供程序所需要的资源文件。资源文件的内容是很多的key-value形式，其中key是程序使用的部分，而value则是程序界面显示字符串。
+
+   资源文件明明可以有如下三种形式：
+
+   * baseName_language_country.properties
+   * baseName_language.properties
+   * baseName.properies
+
+   其中baseName是资源文件基本名称,用户可以随意的指定；而language和country都不可以随意的变化，必须是Java所支持的语言和国家
+
+3. Java支持的语言和国家
+
+   ```Java
+   public static void main(String[] args) {
+   
+   	Locale[] localeList=Locale.getAvailableLocales();
+   	for(var i=0;i<localeList.length;i++) {
+   		System.out.println(localeList[i].getDisplayCountry()+"="+localeList[i].getCountry()+"="
+   	+localeList[i].getDisplayLanguage()+localeList[i].getLanguage());
+   		
+   	}
+   
+   
+   }
+   
+   ```
+
    
 
+4. 完成国际化
+
+   1. 创建第一个文件：mess_zh_CN.properties
+
+      ```
+      hello=你好!
+      ```
+
+   2. 创建第二个文件:mess_en_US.properties
+
+      ```
+      hello=Welcome You!
+      ```
+
+   3. ```Java
+      public static void main(String[] args) {
+      
+      	var myLocale=Locale.getDefault(Locale.Category.FORMAT);
+      	var bundle=ResourceBundle.getBundle("mess",myLocale);
+      	System.out.println(bundle.getString("hello"));
+      }
+      ```
+
+   4. Java程序国际化的关键是ResourceBundle，它有一个静态的方法:getBundle(String baseName,Locale locale)，该方法将根据Locale加载资源文件，而Locale封装了一个国家，语言。
+
+   5. 不同国家，语言环境的资源文件的baseName是相同的，即baseName为mess的资源文件有很多个，不同国家，语言环境对应不同的资源文件。
+
+      
+
+      ```Java
+      var bundle=ResourceBundle.getBundle("mess",myLocale);
+      ```
+
+      上述代码会加载baseNmae为mess的系列资源文件之一，到底加载哪一个资源文件，则取决于myLocale
+
+   6. 使用MessageFormat处理包含占位符的字符串
+
+      1. 提供一个myMess_en_US.properties文件，该文件的内容如下：
+
+         ```
+         msg=Hello,{0}!Today is {1}
+         ```
+
+      2. 提供一个myMess_zh_CN.properties文件，该文件的内容如下
+
+         ```
+         msg=你好,{0}!今天是{1}
+         ```
+
+      3. 档程序直接使用ResourceBundle的getString()方法取出Msg对应的字符串时，在简体中文环境下 你好,{0}!今天是{1} 这显然不是需要的结果，程序还需要为{0}和{1}两个占位符赋值。此时需要使用MessageFormat类,该类包含一个有用的静态方法
+
+      format(String pattern,Object...values):返回后面的多个参数值填充前面的Pattern字符串，其中借助于上面的MessageFormat类的帮助，将国际化程序修改为如下的形式public static void main(String[] args) {
+
+      ```Java
+      Locale currentLocal=null;
+      if(args.length==2) {
+      	currentLocal=new Locale(args[0],args[1]);
+      }else {
+      	currentLocal=Locale.getDefault(Locale.Category.FORMAT);
+      }
+      var bundle=ResourceBundle.getBundle("myMess",currentLocal);
+      var msg=bundle.getString("msg");
+      System.out.println(MessageFormat.format(msg, "yeeku",new Date()));
+      ```
+
+   7. Java允许使用类文件来代替资源文件，必须满足以下条件
+
+      * 该类的名字必须是baseName_language_country，这与属性文件命名相似
+
+      * 该类必须继承ListResourceBundle，并重写getContents()方法，该方法返回Object数组，该数组的每一项都是key-value对
+
+        ```Java
+        package chapter07;
+        import java.util.ListResourceBundle;
+        
+        public class myMess_zh_CN extends ListResourceBundle{
+        
+        	
+        	private final Object myData[][]= {
+        			{
+        				"msg","{0} hello today is {1}"
+        			}	
+        	};
+        	@Override
+        	protected Object[][] getContents() {
+        		return myData;
+        	}
+        }
+        
+        ```
+
+        
+
+        ```Java
+        public static void main(String[] args) {
+        
+        	myMess_zh_CN s=new myMess_zh_CN();
+        	Locale currentLocal=null;
+        	if(args.length==2) {
+        		currentLocal=new Locale(args[0],args[1]);
+        	}else {
+        		currentLocal=Locale.getDefault(Locale.Category.FORMAT);
+        	}
+        	//注意此处的的包名称，此类在chapter07的包下边
+        	var bundle=ResourceBundle.getBundle("chapter07.myMess",currentLocal);
+        	var msg=bundle.getString("msg");
+        	System.out.println(MessageFormat.format(msg, "yeeku",new Date()));
+        }
+        
+        ```
+
+      * 如果资源文件和java类文件同事存在他们的加载顺序如下
+
+        1. baseName_zh_CN.class
+        2. baseName_zhu_CN.properties
+        3. baseName_zh.class
+        4. baseName_zh.properties
+        5. baseName.class
+        6. baseName.properties
+
+        如果以上的文件都不存在则会抛出异常。
+
+## 14. Java9新增的日志API（这一节有问题，代码错误）
+
+1. 这套日志API的用法非常的简单，只要两步就行
+
+   1. 调用System类的getLogger(String name)方法获取System.Logger对象
+
+   2. System.Logger对象的log()方法输出日志。该方法的第一个参数用于指定日志级别
+
+      为了与传统的Java.util.logging日志级别，主流日志框架的级别兼容，Java9定义了如下级别![image-20201105112110036](./pic/image-20201105112110036.png)
+
+      该日志级别是一个非常有用的东西，在开发阶段调试程序的时候，可能需要大量输出调试信息，在发布软件时候，又希望关掉这些调试信息。此时就可以通过日志来实现，只要将系统日志级别调高，所有低于该级别的日志信息都会被自动关闭。
+
+## 15. 使用NumberFormat格式化数字
+
+1. MessageFormat是抽象类Fromat的子类，Format抽象类还有两个子类:NumberFormat和DateFormat，它们分别用以实现数值，日期的格式化。NumberFormat,DateForamt,它们分别用以实现数值，日期的格式化。NumberFormat,DateFormat可以将数值，日期转换成字符串，也可以将字符穿转换成数值，日期。
+
+2. NumberFormat和DateFormat都包含了format()和parse()方法，其中format()用于将数值，日期格式化成字符串，parse()用于将字符串解析成数值，日期。
+
+3. NumberFormat是一个抽象的类，所以无法通过它的构造器来创建NumberFormat对象，它提供了如下几个方法得到NumberFormat对象
+
+   1. getCurrentInstance()：返回默认Locale的货币格式器。也可以在调用该方法的时候传入指定的Locale获取指定的Locale的货币器
+
+   2. getIntegerInstance():返回默认Locale的整数格式器
+
+   3. getNumberInstance():返回默认的Locale的通用数值格式器。也可以在调用该方法时传入指定的Locale，则获取指定Locale的通用数值格式器
+
+   4. getPercentInstance():返回默认Locale的百分数格式器。也可以在调用方法的时候传入指定Locale，则获取指定Locale的百分数格式器。
+
+      一旦取得了NumberFormat对象之后，就可以调用它的format()方法来格式化数值，包括整数和浮点数。
+   
+      ```Java
+      //需要被转化的数字
+      	var db=123400.567;
+      	//创建不同的Locale
+      	Locale[] locales = {
+      			Locale.CHINA,Locale.JAPAN,Locale.GERMAN,Locale.US
+      	};
+      	var nf=new NumberFormat[12];
+      	//为上面的四个Locale创建12个NumberFormat对象
+      	//每个Locale分别有通用的数值格式器，比分数格式器，货币格式器
+      	for (var i=0;i<locales.length;i++){
+      		nf[i*3]=NumberFormat.getNumberInstance(locales[i]);
+      		nf[i*3+1]=NumberFormat.getPercentInstance(locales[i]);
+      		nf[i*3+2]=NumberFormat.getCurrencyInstance(locales[i]);
+      	}
+      	for(var i=0;i<locales.length;i++) {
+      		var tip= i==0 ? "---中国的格式---":i==1? "---日本的格式---":i==2? "---德国的格式---":"---美国的格式---";
+      		System.out.println(tip);
+      		System.out.println("数值格式"+nf[i*3].format(db));
+      		System.out.println("百分数"+nf[i*3+1].format(db));
+      		System.out.println("货币格式"+nf[i*3+2].format(db));
+      	}
+      ```
+
+## 16 .使用DateFormat格式化日期，时间
+
+1. 余与NumberFormat相似的是，DateFormat也是一个抽象的类，它提供了如下几个类方法用于获取DateFormat对象
+
+   1. getDateInstance():返回一个日期格式器，它格式化后的字符串只有日期，没有时间。该方法可以传入多个参数，用于指定日期样式和Locale等参数；如果不指定这些参数，则使用默认参数。
+   2. getTimeInstance():返回一个时间格式器，它格式化后的字符串只有时间，没有日期。该方法可以传入多个参数，用于指定时间样式和Locale等参数；如果不指定这些参数，则使用默认参数。
+   3. getDateTimeInstance():返回一个日期，时间格式器，它格式化后的字符串既有日期，也有时间。该方法可以传入多个参数，用于指定日期样式，时间样式和Locale等参数；如果不指定这些参数，则使用默认参数。
+
+   ```Java
+   
+   	var dt=new Date();
+   	Locale[] locales={Locale.CHINA,Locale.US};
+   	var df =new DateFormat[16];
+   	for(var i=0;i<locales.length;i++) {
+   		df[i*8]=DateFormat.getDateInstance(DateFormat.SHORT,locales[i]);
+   		df[i*8+1]=DateFormat.getDateInstance(DateFormat.MEDIUM,locales[i]);
+   		df[i*8+2]=DateFormat.getDateInstance(DateFormat.LONG,locales[i]);
+   		df[i*8+3]=DateFormat.getDateInstance(DateFormat.FULL,locales[i]);
+   		df[i*8+4]=DateFormat.getTimeInstance(DateFormat.SHORT,locales[i]);
+   		df[i*8+5]=DateFormat.getTimeInstance(DateFormat.MEDIUM,locales[i]);
+   		df[i*8+6]=DateFormat.getTimeInstance(DateFormat.LONG,locales[i]);
+   		df[i*8+7]=DateFormat.getTimeInstance(DateFormat.FULL,locales[i]);
+   	}
+   	for (var i=0;i<locales.length;i++) {
+   		var tip= i==0?"---中国的日期格式---":"---美国的日期格式---";
+   		System.out.println(tip);
+   		System.out.println("SHORT格式的日期格式"+df[i*8].format(dt));
+   		System.out.println("MEDIUM格式的日期格式"+df[i*8+1].format(dt));
+   		System.out.println("LONG格式的日期格式"+df[i*8+2].format(dt));
+   		System.out.println("FULL格式的日期格式"+df[i*8+3].format(dt));
+   		System.out.println("SHORT格式的时间格式"+df[i*8+4].format(dt));
+   		System.out.println("MEDIUM格式的时间格式"+df[i*8+5].format(dt));
+   		System.out.println("LONG格式的时间格式"+df[i*8+6].format(dt));
+   		System.out.println("FULL格式的时间格式"+df[i*8+7].format(dt));
+   	}
+   ```
+
+   ```
+   输出为
+   ---中国的日期格式---
+   SHORT格式的日期格式2020/11/5
+   MEDIUM格式的日期格式2020年11月5日
+   LONG格式的日期格式2020年11月5日
+   FULL格式的日期格式2020年11月5日星期四
+   SHORT格式的时间格式下午4:37
+   MEDIUM格式的时间格式下午4:37:38
+   LONG格式的时间格式CST 下午4:37:38
+   FULL格式的时间格式中国标准时间 下午4:37:38
+   ---美国的日期格式---
+   SHORT格式的日期格式11/5/20
+   MEDIUM格式的日期格式Nov 5, 2020
+   LONG格式的日期格式November 5, 2020
+   FULL格式的日期格式Thursday, November 5, 2020
+   SHORT格式的时间格式4:37 PM
+   MEDIUM格式的时间格式4:37:38 PM
+   LONG格式的时间格式4:37:38 PM CST
+   FULL格式的时间格式4:37:38 PM China Standard Time
+   ```
+
+4. DateFormat的parse()方法可以把一个字符串解析成Date对象，但它要求被解析的字符串必须符合日期的字符串的要求，否则可能会抛出ParseException
+
+```Java
+var str1="2020/11/5";
+ var str2="2020年11月05日";
+ System.out.println(DateFormat.getDateInstance().parse(str2));//Thu Nov 05 00:00:00 CST 2020
+ System.out.println(DateFormat.getDateInstance(DateFormat.SHORT).parse(str1));//Thu Nov 05 00:00:00 CST 2020
+ System.out.println(DateFormat.getDateInstance().parse(str1));//触发异常
+```
+
+5. **SimpleDateFormat格式化日期**！！！
+
+   1. SimpleDateFormat是DateFormat的子类，它可以非常灵活的格式化Date，也可以解析各种格式的日期字符串。创建SimpleDateFormat对象时需要传入一个Pattern字符串，整个pattern不是正则表达式，而是一个日期模板字符串
+
+      ```Java
+      var d=new Date();
+        var sdf1=new SimpleDateFormat("Gyyyy年中的第D天");
+        var dateStr=sdf1.format(d);
+        System.out.println(dateStr);
+        var str="14###3##21";
+        var sdf2=new SimpleDateFormat("yy###M##dd");
+        System.out.println(sdf2.parse(str));
+      ```
+
+      
+
+## 17. java8新增的日期，时间格式器
+
+Java8新增的日期，时间API里不仅包含了Instant，LocalDate,LocalDateTime,LocalTime等代表日期，时间的类，而且在java.time.format包下提供了一个DateTimeFormatter格式器，该类相当于前面介绍的DateFormat和SimpleDateFromat的合体，功能非常的强大。
+
+与DateFormat，SimpleDateFormat类似，DateTimeFormatter不仅可以将日期，时间对象格式化成字符串，也可以将特定格式的字符串解析成日期，时间对象。
+
+获取DateTimeFormatter对象有如下三种方式
+
+直接使用静态常量创建DateTimeFormatter格式器。DateTimeFormatterf类中包含了大量形如ISO_LOCAL_DATE、ISO_LOCAL_TIMEI,ISO_LOCAL_DATE_TIME等静态常量，这些静态常量本身就是DateTimeFormatter实例。
