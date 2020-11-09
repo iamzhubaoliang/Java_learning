@@ -4,7 +4,7 @@
 
 1. Runtime类代表Java程序的运行环境，每个Java程序都有一个与之对应Runtime实例，应用程序通过该对象与其运行时环境相连。应用程序不能创建自己的Runtime实例，但可以通过getRuntime()方法获取与之关联的Runtime对象。
 
-2. 与System相似的是，Runtime类也提供了gc()方法和runFinalization方法来通知系统进行垃圾回收，清理系统资源，并提供了load(String filename)和loadLibrary(String libname)方法来加载文件和动态链接库。
+2. 与System相似的是，Runtime类也提供了**gc()方法和runFinalization**方法来通知系统进行垃圾回收，清理系统资源，并提供了load(String filename)和loadLibrary(String libname)方法来加载文件和动态链接库。
 
 3. **Runtime类代表Java程序的运行环境**，可以访问JVM的相关信息，如处理器数量、内存信息等
 
@@ -46,7 +46,7 @@
 
 3. Class<?>getClass():返回该对象运行时的类
 
-4. int hashCode():返回该对象的hashCode值，在默认情况下，Object类的hashCode()方法根据该对象的地址来进行计算（即与System.ideatityHashCode(Object x)方法计算的结果相同）。但很多类都重写了Obect类的hashCode()方法，不再根据地址来计算其hashCode()值
+4. int hashCode():返回该对象的hashCode值，在默认情况下，Object类的hashCode()方法根据该对象的地址来进行计算（即与System.identityHashCode(Object x)方法计算的结果相同）。但很多类都重写了Obect类的hashCode()方法，不再根据地址来计算其hashCode()值
 
 5. String toString():返回该对象的字符串表示。
 
@@ -97,7 +97,7 @@ Object类提供的clone()方法不仅能简单地处理“复制”对象的问�
 
 需要指出的是，object类的clone方法虽然简单，易用，但它只是一种“浅克隆”，它只是克隆该对象的所有成员变量值，不会对引用类型的成员变量值所引用的对象进行克隆。如果开发者需要对对象进行“深克隆”，则需要开发者自己进行递归克隆，保证所有引用类型的成员变量值所引用的对象都被复制了。
 
-## 4.操作对象的Object工具类 
+## 4.操作对象的Objects工具类 
 
 1. Java7新增了一个Object工具类，它提供了一些工具方法来操作对象，**这些工具方法大多是“空指针”安全的。比如你不确定引用变量是否为Null，如果贸然用该变量的toString()方法，则可能引发NullPointerException异常；如果使用Objects类提供的toString(Object o )方法**，就不会引发空指针异常，当o为Null时，程序将返回 一个"null"字符串
 
@@ -117,7 +117,7 @@ Object类提供的clone()方法不仅能简单地处理“复制”对象的问�
 
 ```Java
 public class userInteraction {
-  static userInteraction obj;
+  static userInteraction obj;//因为没有赋值，所以是空的
   public static void main(String[] args) throws Exception{
     userInteraction a=Objects.requireNonNull(obj,"参数不能为null");
     }
@@ -128,9 +128,9 @@ public class userInteraction {
 
 1. **String类是不可变类**，即一旦一个String对象被创建以后，包含在这个对象中的字符序列是不可改变的，直至这个对象被销毁。
 
-2. **StringBuffer对象则代表一个字符序列可变的字符串**，当一个StringBuffer被创建以后，通过StringBuffer提供的**append(),insert(),reverse(),setCharAt(),setLength()**等方法可以改变这个字符串对象的字符序列。一旦通过StringBuffer生成了最终想要的字符串，就可以调用它的toString()方法将其转换为一个String对象。
+2. **StringBuffer对象则代表一个字符序列可变的字符串**，当一个StringBuffer被创建以后，通过StringBuffer提供的**append(),insert(),reverse(),setCharAt(),setLength()**等方法可以改变这个字符串对象的字符序列。**一旦通过StringBuffer生成了最终想要的字符串，就可以调用它的toString()方法将其转换为一个String对象。**
 
-3. StringBuilder和StringBuffer基本相似，两个类的构造器和方法也基本相同。不同的是，StringBuffer是线程安全的，而StringBuilder则没有实现线程安全的功能，所以性能略高。因此在通常的情况下，如果要创建一个内容可变的字符串对象，则应该有限考虑十一哦你给StringBuilder类。
+3. StringBuilder和StringBuffer基本相似，两个类的构造器和方法也基本相同。不同的是，**StringBuffer是线程安全的，而StringBuilder则没有实现线程安全的功能，所以性能略高**。因此在通常的情况下，如果要创建一个内容可变的字符串对象，则应该有限考虑十一哦你给StringBuilder类。
 
 4. **String，StringBulider，StringBuffer都实现了CharSequence接口**，因此CharSequence可认为是一个字符串的协议接口。
 
@@ -207,17 +207,31 @@ public class userInteraction {
 
    * **boolean startsWith(String prefix,int toffset**):该对象从toffset位置算起，是否以prefix开始。
 
-   * String substring(int beginIndex):获取从beginIndex位置开始到结束的字符串
+   * **String substring(int beginIndex):获取从beginIndex位置开始到结束的字符串**
 
-   * String substring(int beginIndex,int endIndex):获取从beginIndex位置开始到endIndex位置的子字符串
+   * **String substring(int beginIndex,int endIndex):获取从beginIndex位置开始到endIndex位置的子字符串**
 
-   * char[] toCharArray():将该String对象转换成char数组
+   * **char[] toCharArray():将该String对象转换成char数组**
 
    * **String toLowerCase():**将字符串转换成小写
 
    * **String ToUpperCase()**：将字符串转换成大写
 
    * **static String valueOf(X x)**:一系列用于将解百纳类型值转换为String对象的方法。
+   
+   * ```Java
+     String a=new String("字符串");
+     StringBuffer sb=new StringBuffer("可变字符串");
+     StringBuilder sd=new StringBuilder("可变字符串");
+     System.out.println(a);
+     System.out.println(sb);
+     System.out.println(sd);
+     System.out.println(new String(new char[]{'i','a','m'}));
+     System.out.println(String.copyValueOf(new char[]{'i','a','m'}));
+     System.out.println("aabb".replace("b","c"));
+     System.out.println("aabbcc".replaceFirst("b","c"));
+     System.out.println("aabbccdd".toCharArray());
+     ```
 
 ## 6.Math类
 
@@ -230,7 +244,12 @@ public class userInteraction {
 
 2. ThreadLocalRandom类是Java7新增的一个类，它是Random的增强版。**在并发访问的环境下，使用ThreadLocalRandom来代替Random可以减少多线程资源的竞争，最终保证系统具有更好的线程安全性。**
 
-3. ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来获取ThreadLocalRandom对象，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
+3. **ThreadLocalRandom类的用法与Random类的用法基本相似，它提供了一个静态的current()方法来获取ThreadLocalRandom对象**，获取该对象之后即可调用各种nextXxx()方法来获取伪随机数了。
+
+   ```Java
+   ThreadLocalRandom rd =ThreadLocalRandom.current();
+   System.out.println(rd.nextFloat());
+   ```
 
 4. **ThreadLocalRandom与Random都比Math的Random方**法提供了更多的方式来生成各种伪随机数，可以生成浮点类型的伪随机数，也可以生成整数类型的伪随机数，还可以指定生成随机数的范围。
 
@@ -245,6 +264,9 @@ public class userInteraction {
 5. Random使用一个48位的种子，如果这两个类的两个实例是用同一个种子创建的，对它们以同样的顺序调用方法，则它们会产生相同的数字序列。
 
    ```Java
+   Random rd=new Random(System.currentTimeMillis());
+           System.out.println(rd.nextFloat());
+   
    var r1=new Random(50);
        System.out.println(""+r1.nextInt()+","+r1.nextFloat()+","+r1.nextGaussian());
    
@@ -282,7 +304,7 @@ Random rand=new Random(System.currentTimeMillis());
 
       如果使用BigDecimal(String val)构造器的结果时可预知的---写入new BigDecimal("0.1")将创建一个BigDecimal，**它正好等于预期的0.1**，因此通常建议优先使用基于String的构造器。
 
-      如果必须使用double浮点数作为BigDecimal构造器的参数时，不要直接将该double浮点数作为构造器参数创建BigDecimal对象，而是应该通过BigDecimal.valueOf(double value)静态方法来创建BigDecimal对象。
+      如果必须使用double浮点数作为BigDecimal构造器的参数时，不要直接将该double浮点数作为构造器参数创建BigDecimal对象，而是应该通过BigDecimal.valueOf(double value)静态方法来创建BigDecimal对象。这样创建的为0.1
 
    3. BigDecimal类提供了add(),subtract(),multiply(),divide(),pow()等方法对精确浮点数进行常规算数运算
 
@@ -366,7 +388,7 @@ Random rand=new Random(System.currentTimeMillis());
 
 1. **Calender类本身是一个抽象类**，它是所有日历类的模板，并提供了一些所有日历通用的方法，但它本身并不能直接实例化，程序知道能创建Clendar子类的实例，Java本身提供了一个GregorianCalendar类，一个代表格里高利日历的子类，它代表了通常所说的公历。
 2. 也可以创建自己的Calendar子类，然后将它作为Calendar对象使用（这就是多态）。
-3. Calendar类是一个抽象类，所以不能是哟i给你构造器来进行创建Calendar对象。但它提供了几个静态getInstance()方法来获取Calendar对象，这些方法根据TimeZone,Locale类来和洛区特定的Calendar，如果不指定TimeZone,Locale，则使用默认的TImeZone，Local来创建Calendar。
+3. **Calendar类是一个抽象类**，所以不能是哟i给你构造器来进行创建Calendar对象。但它提供了几个静态getInstance()方法来获取Calendar对象，这些方法根据TimeZone,Locale类来和洛区特定的Calendar，如果不指定TimeZone,Locale，则使用默认的TImeZone，Local来创建Calendar。
 
 ```Java
 var calendar= Calendar.getInstance();
@@ -447,7 +469,7 @@ System.out.println(calendar2.getTime());
 
    10. set方法延迟修改
 
-       set(f,value)方法将日历字段f更改为value,此外它还设置了一个内部成员变量，以指示日历字段f已经被修改。尽管日历字段f时立即被更改的，但该Calendar所代表的时间不会立即修改，直到下次调用get(),getTIme(),getTImeInMillis(),add()或roll()时才会重新计算日历的时间。这被称为set()方法的延迟修改，**采用延迟修改的优势是多次调用set()不会触发多次不必要的计算（需要计算出一个代表实际时间的Long型整数）**
+       set(f,value)方法将日历字段f更改为value,此外它还设置了一个内部成员变量，以指示日历字段f已经被修改。尽管日历字段f时立即被更改的，但该Calendar所代表的时间不会立即修改，直到下次调用**get(),getTIme(),getTImeInMillis(),add()或roll()时才会重新计算日历的时间（多次set不会）。**这被称为set()方法的延迟修改，**采用延迟修改的优势是多次调用set()不会触发多次不必要的计算（需要计算出一个代表实际时间的Long型整数）**
 
        ```JAVA
        Calendar cal=Calendar.getInstance();
@@ -492,7 +514,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
          System.out.println("当前时刻加6000秒"+clock2.instant());
    ```
 
-3. Instant:代表一个具体的时刻，可以精确到纳秒。该类提供了静态的now()方法来获取当前的时刻，也提供了静态的now(Clock clock)方法来获取clock对应的时间，除此之外还提供了一系列minusXxx()方法在当前的时刻基础上减去一段时间，也提供了plusXxx()方法在当前时刻基础上加上一段时间。
+3. **Instant:代表一个具体的时刻，可以精确到纳秒。该类提供了静态的now()方法来获取当前的时刻，也提供了静态的now(Clock clock)方法来获取clock对应的时间**，除此之外还提供了一系列minusXxx()方法在当前的时刻基础上减去一段时间，也提供了plusXxx()方法在当前时刻基础上加上一段时间。
 
    ```Java
    var instant=Instant.now();
@@ -512,7 +534,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
    System.out.println(instant5);
    ```
 
-4. LocalDate:该类代表不带时区的日期，例如2007-12-03。该类提供了静态的now方法来获取当前的日期，也提供了静态的now(Clock clock)方法来获取clock对应的日期。除此之外，它还提供了minusXxx()方法在当前年份基础上减去几年，几月，几周，或者几日，也提供了plusXxx()方法在当前的年份基础上加上几年，几月，几周，或者几日。
+4. **LocalDate:该类代表不带时区的日期**，例如2007-12-03。该类提供了静态的now方法来获取当前的日期，也提供了静态的now(Clock clock)方法来获取clock对应的日期。除此之外，它还提供了minusXxx()方法在当前年份基础上减去几年，几月，几周，或者几日，也提供了plusXxx()方法在当前的年份基础上加上几年，几月，几周，或者几日。
 
    ```Java
    var localDate=LocalDate.now();
@@ -777,7 +799,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
 
 ### 1.  Java9增强的MethodHandle
 
-1. MethodHandle为Java增加了方法引用功能，方法引用的概念有点类似于C的“函数指针”。这种方法引用是一种轻量级的引用方式，它不会检查方法的访问权限，也不会管方法所属的类，实例方法或静态方法，MethodHandle就是简单代表特定的方法，并可通过MethodHandle来调用。
+1. MethodHandle为Java增加了方法引用功能，方法引用的概念有点类似于C的“函数指针”。**这种方法引用是一种轻量级的引用方式，它不会检查方法的访问权限，也不会管方法所属的类，实例方法或静态方法，MethodHandle就是简单代表特定的方法，并可通过MethodHandle来调用。**
 
 2. 为了使用MethodHandle,还涉及如下几个类
 
@@ -836,9 +858,7 @@ Java8专门新增了一个java.time包，该包下包含了如下常用的类
    	System.out.println(vh1.get(user));//输出为null
    	vh1.set(user,"孙悟空");
    	System.out.println(user.name);
-   	
-   	
-   	
+   
    }
    }
    class User{
