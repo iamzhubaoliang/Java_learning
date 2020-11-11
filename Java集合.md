@@ -8,15 +8,15 @@
 
 2. 所有的集合类都位于java.util包下，后来为了支持线程安全机制，Java5还在java.util.concurrent包下提供了一些多线程集合类
 
-3. Java集合与数组的区别
+3. **Java集合与数组的区别**
 
-   数组中可以保存集合基本数据类型，也可以保存对象的引用（习惯上称为对象），而集合只能保存对象的引用（习惯上称为对象）
+   **数组中可以保存集合基本数据类型，也可以保存对象的引用（习惯上称为对象），而集合只能保存对象的引用（习惯上称为对象）**
 
 4. Java的集合类主要由两个接口派生出来：Collection和Map类，Collection和Map是Java集合框架的根接口，这两个接口又包含了一些子接口或实现类![image-20201109153857809](./pic/image-20201109153857809.png)
 
 上图中国Set和List接口是Collection接口派生出的两个子接口，他们分别代表无序集合和有序的集合，Queue是Java提供的队列实现，类似于List
 
-5. Map保存的每一项数据都是key-value对，也就是由key和value两个值组成。Map里面的key是不可重复的，key用于标识集合里的每项数据,Set集合无法记住添加这个元素的顺序，所以Set里的元素不能重复（既然没有顺序，就不能重复否则无法识别这个元素），List非常像一个数组，它可以记住每次添加元素的顺序，且List长度是可变的。
+5. Map保存的每一项数据都是key-value对，也就是由key和value两个值组成。Map里面的key是不可重复的，key用于标识集合里的每项数据,Set集合无法记住添加这个元素的顺序，所以Set里的元素不能重复（既然没有顺序，就不能重复否则无法识别这个元素），**List非常像一个数组，它可以记住每次添加元素的顺序，且List长度是可变的**。
 6. 如果访问List集合中的元素，可以直接根据元素的索引来访问；如果访问Map集合中的元素，可以根据每项元素的key来访问其value值；如果访问Set集合中的元素，则只能根据元素的本身来访问
 
 ![image-20201109155717198](./pic/image-20201109155717198.png)
@@ -80,7 +80,7 @@ System.out.println(Arrays.toString(aa));
 
 ## 2.使用Lambda表达式遍历集合
 
-1. Java8为Iterable接口新增了一个forEach(Consumer action)默认方法，该方法所需要的参数的类型是一个函数式的接口，而Iterable接口是Collection接口的父接口，因此Collection集合也可以直接调用该方法。当程序调用Iterable的forEach(Consumer action)遍历集合元素的时候，程序会依次将结合元素传给Consumer的accep(T t)方法（该接口中唯一的抽象方法）。正因为Consumer是函数式的接口，因此可以使用lambda表达式来遍历集合元素。
+1. **Java8为Iterable接口新增了一个forEach(Consumer action)默认方法，该方法所需要的参数的类型是一个函数式的接口，而Iterable接口是Collection接口的父接口，因此Collection集合也可以直接调用该方法**。当程序调用Iterable的forEach(Consumer action)遍历集合元素的时候，程序会依次将结合元素传给Consumer的accep(T t)方法（该接口中唯一的抽象方法）。正因为Consumer是函数式的接口，因此可以使用lambda表达式来遍历集合元素。
 
    ```Java
    var books=new HashSet();
@@ -125,7 +125,7 @@ while (it.hasNext())
 System.out.println(books);
 ```
 
-Iterator必须依附于Collection对象，若有一个Iterator对象，则必然有一个与之关联的Collection对象，Iterator提供了两个方法迭代访问Collection集合里的元素，并可通过remove方法删除集合中上一次next()方法返回的集合元素
+**Iterator必须依附于Collection对象，若有一个Iterator对象，则必然有一个与之关联的Collection对象，Iterator提供了两个方法迭代访问Collection集合里的元素，并可通过remove方法删除集合中上一次next()方法返回的集合元素**
 
 上面可以看到Iterator并不是把集合元素本身传给了迭代变量，而是把集合元素的值传给了迭代变量，所以修改迭代变量的值 对集合没有任何影响
 
@@ -286,8 +286,8 @@ System.out.println(books);
 
 上面注释掉的代码每次只能执行一行，否则会抛出异常
 
-8. 中间方法：中间方法允许流保持打开，并允许直接调用后续的方法。上面程序中的map()方法就是中间方法。中间方法返回值是另外一个流
-9. 末端方法：末端方法是对流的最终操作。当对某个Stream执行末端方法后，该流将会被消耗其不可再用。上面程序中sum(),count(),average()等方法都是末端的方法
+8. **中间方法：中间方法允许流保持打开，并允许直接调用后续的方法。上面程序中的map()方法就是中间方法。中间方法返回值是另外一个流**
+9. 末端方法：末端方法是对流的最终操作。**当对某个Stream执行末端方法后，该流将会被消耗其不可再用。**上面程序中sum(),count(),average()等方法都是末端的方法
 10. 有状态方法：这种方法会给流增加一些新的属性，比如元素的唯一属性，元素的最大数量，保证元素以排序的方式被处理等，有状态的方法往往需要更大的性能开销
 11. 短路方法：短路方法可以尽早结束对流的操作，不必检查所有元素
 12. 下面介绍一下Stream常用的中间方法
@@ -300,7 +300,7 @@ System.out.println(books);
 
 下面介绍下Stream常用的末端方法
 
-1. forEach(Consumer action):遍历流中所有的元素，对每个元素执行action
+1. **forEach(Consumer action):遍历流中所有的元素，对每个元素执行action**
 
 2. toArray():将流中所有元素转换成一个数组
 
